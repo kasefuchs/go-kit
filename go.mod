@@ -1,4 +1,4 @@
-module codeberg.org/kasefuchs/go-pkg
+module codeberg.org/kasefuchs/go-kit
 
 go 1.26.2
 
