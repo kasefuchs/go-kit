@@ -16,24 +16,28 @@ const (
 	underscore = "_"
 )
 
+// Config wrapper for generic type T
 type Config[T any] struct {
 	k *koanf.Koanf
 }
 
+// New creates config instance
 func New[T any]() *Config[T] {
 	return &Config[T]{
 		k: koanf.New(delimiter),
 	}
 }
 
-func (c *Config[T]) LoadDefaults(defaults map[string]any) error {
-	if err := c.k.Load(confmap.Provider(defaults, delimiter), nil); err != nil {
-		return fmt.Errorf("failed to load default config values")
+// LoadMap loads config from map
+func (c *Config[T]) LoadMap(mp map[string]any) error {
+	if err := c.k.Load(confmap.Provider(mp, delimiter), nil); err != nil {
+		return fmt.Errorf("failed to load config values")
 	}
 
 	return nil
 }
 
+// LoadEnv transforms env vars and loads config
 func (c *Config[T]) LoadEnv(prefix string) error {
 	prefix = strings.ToUpper(prefix) + underscore
 	provider := env.Provider(prefix, delimiter, func(s string) string {
@@ -49,6 +53,7 @@ func (c *Config[T]) LoadEnv(prefix string) error {
 	return nil
 }
 
+// LoadFile loads config from file
 func (c *Config[T]) LoadFile(path string, parser koanf.Parser) error {
 	absPath, err := filepath.Abs(path)
 	if err != nil {
@@ -63,6 +68,7 @@ func (c *Config[T]) LoadFile(path string, parser koanf.Parser) error {
 	return nil
 }
 
+// Build unmarshals data into struct T
 func (c *Config[T]) Build() (T, error) {
 	var v T
 	if err := c.k.Unmarshal("", &v); err != nil {
@@ -72,6 +78,7 @@ func (c *Config[T]) Build() (T, error) {
 	return v, nil
 }
 
+// String returns debug string
 func (c *Config[T]) String() string {
 	return c.k.Sprint()
 }
