@@ -3,6 +3,8 @@ package log
 import (
 	"io"
 	"os"
+	"path/filepath"
+	"strconv"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -17,6 +19,11 @@ func Init(cfg Config) error {
 		return err
 	}
 	zerolog.SetGlobalLevel(level)
+
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	zerolog.CallerMarshalFunc = func(pc uintptr, file string, line int) string {
+		return filepath.Base(file) + ":" + strconv.Itoa(line)
+	}
 
 	var output io.Writer = os.Stdout
 	if cfg.Pretty {
