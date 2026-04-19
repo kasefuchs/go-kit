@@ -18,8 +18,8 @@ const (
 
 var k = koanf.New(delimiter)
 
-// Config returns global koanf instance
-func Config() *koanf.Koanf {
+// Koanf returns global koanf instance
+func Koanf() *koanf.Koanf {
 	return k
 }
 
