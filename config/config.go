@@ -12,11 +12,11 @@ import (
 )
 
 const (
-	delimiter  = "."
-	underscore = "_"
+	koanfDelimiter = "."
+	envDelimiter   = "__"
 )
 
-var k = koanf.New(delimiter)
+var k = koanf.New(koanfDelimiter)
 
 // Koanf returns global koanf instance
 func Koanf() *koanf.Koanf {
@@ -30,7 +30,7 @@ func String() string {
 
 // LoadMap loads config from map
 func LoadMap(mp map[string]any) error {
-	if err := k.Load(confmap.Provider(mp, delimiter), nil); err != nil {
+	if err := k.Load(confmap.Provider(mp, koanfDelimiter), nil); err != nil {
 		return fmt.Errorf("failed to load config values")
 	}
 
@@ -39,11 +39,12 @@ func LoadMap(mp map[string]any) error {
 
 // LoadEnv transforms env vars and loads config
 func LoadEnv(prefix string) error {
-	prefix = strings.ToUpper(prefix) + underscore
-	provider := env.Provider(prefix, delimiter, func(s string) string {
+	prefix = strings.ToUpper(prefix) + envDelimiter
+	provider := env.Provider(prefix, koanfDelimiter, func(s string) string {
 		s = strings.TrimPrefix(s, prefix)
 		s = strings.ToLower(s)
-		return strings.ReplaceAll(s, underscore, delimiter)
+
+		return strings.ReplaceAll(s, envDelimiter, koanfDelimiter)
 	})
 
 	if err := k.Load(provider, nil); err != nil {
